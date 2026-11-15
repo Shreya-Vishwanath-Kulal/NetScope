@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NetScope – Interactive Network Category Simulator</title>
+<style>
+:root{--navy:#0a1f44;--blue:#1d4ed8;--bg:#f1f4f9;--card:#fff;--tx:#0f1b33;--mu:#5a6785;--bd:#dde3ee;--soft:#eaf0ff;--ok:#15803d;--bad:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--blue:#6b95ff;--bg:#0b1220;--card:#121c33;--tx:#e7ecf8;--mu:#9aa8c7;--bd:#25324f;--soft:#16264a;--ok:#4ade80;--bad:#f87171}}
+:root[data-theme=dark]{--blue:#6b95ff;--bg:#0b1220;--card:#121c33;--tx:#e7ecf8;--mu:#9aa8c7;--bd:#25324f;--soft:#16264a;--ok:#4ade80;--bad:#f87171}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+h1,h2,h3{line-height:1.2;margin:0 0 .5em;letter-spacing:-.01em}
+a{color:var(--blue)}
+header{background:linear-gradient(90deg,var(--navy),#14327a);color:#fff;position:sticky;top:0;z-index:20}
+.bar{max-width:1100px;margin:auto;display:flex;align-items:center;gap:12px;padding:10px 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem;cursor:pointer;background:none;border:0;color:#fff}
+nav{margin-left:auto;display:flex;gap:4px;align-items:center}
+nav button,.tg{background:none;border:0;color:#cfdcff;padding:8px 12px;border-radius:8px;cursor:pointer;font:inherit;font-size:.95rem;transition:.2s}
+nav button:hover,nav button.on{background:rgba(255,255,255,.15);color:#fff}
+.hb{display:none;margin-left:auto;background:none;border:1px solid #5f7bc4;color:#fff;border-radius:8px;padding:6px 10px;font-size:1.1rem}
+main{flex:1;width:100%;max-width:1100px;margin:auto;padding:24px 18px}
+.view{display:none}.view.on{display:block;animation:in .35s}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(10,31,68,.06)}
+.grid{display:grid;gap:16px}.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:11px 20px;font:inherit;font-weight:600;cursor:pointer;transition:.2s}
+:root[data-theme=dark] .btn,.btn{color:#fff}
+.btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--blue);border:1.5px solid var(--blue)}
+.btn.sm{padding:6px 12px;font-size:.85rem}
+.btn.red{background:var(--bad)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #7aa2ff;outline-offset:2px}
+label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 4px}
+input,select{width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+.err{background:rgba(185,28,28,.1);color:var(--bad);border:1px solid var(--bad);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:.92rem}
+.hero{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-radius:20px;padding:48px 28px;text-align:center}
+.hero p{max-width:680px;margin:0 auto 22px;color:#dbe6ff}
+.hero .btn{margin:4px}.hero .btn.ghost{color:#fff;border-color:#fff}
+.hero .btn:not(.ghost){background:#fff;color:var(--navy)}
+.mu{color:var(--mu)}
+.ic{font-size:2rem}
+.stat b{display:block;font-size:2.1rem;color:var(--blue)}
+.chip{display:inline-block;padding:3px 12px;border-radius:99px;color:#fff;font-weight:700;font-size:.85rem}
+.LAN{background:#1d4ed8}.MAN{background:#0e7490}.WAN{background:#0a1f44;border:1px solid #5f7bc4}
+.cc{border-top:5px solid var(--blue);cursor:pointer;transition:.2s}.cc:hover{transform:translateY(-3px)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{padding:9px 12px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
+th{background:var(--soft)}
+.net{width:100%;height:auto;background:var(--soft);border-radius:14px}
+.nd{cursor:pointer}.nd:hover circle{r:25}
+.flow{stroke-dasharray:6 6;animation:d 1s linear infinite;fill:none;stroke-width:2}
+@keyframes d{to{stroke-dashoffset:-12}}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border:1.5px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:10px;font:inherit;cursor:pointer;transition:.2s}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt.ok{border-color:var(--ok);background:rgba(21,128,61,.14)}.opt.no{border-color:var(--bad);background:rgba(185,28,28,.12)}
+.pg{height:8px;background:var(--bd);border-radius:9px;overflow:hidden}.pg i{display:block;height:100%;background:var(--blue);transition:.3s}
+.bar2{height:12px;border-radius:9px;background:var(--blue);margin:4px 0 10px}
+footer{background:var(--navy);color:#b9c8ee;text-align:center;padding:18px;font-size:.9rem}
+@media(max-width:760px){.hb{display:block}nav{display:none;position:absolute;top:100%;left:0;right:0;background:var(--navy);flex-direction:column;align-items:stretch;padding:8px 18px 14px}nav.open{display:flex}.hero{padding:34px 18px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header><div class="bar"><button class="brand" onclick="go(me?'dash':'home')" aria-label="NetScope home"><svg width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="none" stroke="#7aa2ff" stroke-width="2"/><circle cx="16" cy="16" r="8" fill="none" stroke="#7aa2ff" stroke-width="2"/><circle cx="16" cy="16" r="3" fill="#fff"/><path d="M16 16 26 8" stroke="#fff" stroke-width="2"/></svg>NetScope</button>
+<button class="hb" onclick="$('nav').classList.toggle('open')" aria-label="Menu">☰</button><nav id="nav"></nav></div></header>
+<main>
+<section class="view" id="v-home"><div class="hero"><h1 style="font-size:clamp(2rem,6vw,3.2rem)">NetScope</h1><h3>Interactive Network Category Simulator</h3>
+<p>Describe a network scenario, see it classified as LAN, MAN or WAN, and watch the connections come alive. Learn the theory, test yourself with a quiz and keep a history of every simulation.</p>
+<button class="btn" onclick="go('signup')">Create account</button><button class="btn ghost" onclick="go('login')">Log in</button></div>
+<div class="grid g3" style="margin-top:18px" id="homecards"></div>
+<div class="card" style="margin-top:18px"><h3>What you can do</h3><div class="grid g4"><div>🧪 <b>Simulate</b><br><span class="mu">Enter inputs and get an instant classification.</span></div><div>🗺️ <b>Visualise</b><br><span class="mu">Animated diagrams for each category.</span></div><div>📚 <b>Learn</b><br><span class="mu">Definitions, examples and comparisons.</span></div><div>📝 <b>Quiz</b><br><span class="mu">Test your knowledge with feedback.</span></div></div></div></section>
+
+<section class="view" id="v-login"><div class="card" style="max-width:420px;margin:auto"><h2>Log in</h2><div id="le"></div>
+<label for="li-e">Email</label><input id="li-e" type="email" autocomplete="email"><label for="li-p">Password</label><input id="li-p" type="password" autocomplete="current-password">
+<p><button class="btn" onclick="login()">Log in</button></p><p class="mu">New to NetScope? <a href="#signup" onclick="go('signup');return false">Sign up</a></p></div></section>
+<section class="view" id="v-signup"><div class="card" style="max-width:420px;margin:auto"><h2>Sign up</h2><div id="se"></div>
+<label for="su-n">Full name</label><input id="su-n" autocomplete="name"><label for="su-e">Email</label><input id="su-e" type="email" autocomplete="email">
+<label for="su-p">Password (min 6 characters)</label><input id="su-p" type="password" autocomplete="new-password"><label for="su-c">Confirm password</label><input id="su-c" type="password" autocomplete="new-password">
+<p><button class="btn" onclick="signup()">Create account</button></p><p class="mu">Already registered? <a href="#login" onclick="go('login');return false">Log in</a></p>
+<p class="mu" style="font-size:.8rem">Accounts are stored only in this browser (demo project).</p></div></section>
+
+<section class="view" id="v-dash"><h2 id="wel"></h2><p class="mu">Here is your simulation activity.</p>
+<div class="grid g4" id="stats"></div>
+<div class="card" style="margin:16px 0;display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between"><div><h3>Ready to analyse a network?</h3><span class="mu">Enter a scenario and NetScope classifies it for you.</span></div><button class="btn" onclick="go('sim')">Open simulator</button></div>
+<h3>Network categories</h3><div class="grid g3" id="dcards"></div></section>
+
+<section class="view" id="v-sim"><h2>Network simulator</h2>
+<div class="grid g2"><div class="card"><h3>Scenario inputs</h3><div id="sme"></div>
+<label for="s-n">Scenario name</label><input id="s-n" placeholder="e.g. College computer lab">
+<label for="s-l">Number of geographical locations</label><input id="s-l" type="number" min="1" max="20" value="1">
+<label for="s-d">Number of computers or devices</label><input id="s-d" type="number" min="1" max="10000" value="20">
+<label for="s-k">Approximate coverage distance (km)</label><input id="s-k" type="number" min="0.01" step="any" value="0.5">
+<label for="s-c">Geographical coverage</label><select id="s-c"><option value="">Select coverage…</option><option value="campus">Building or College Campus</option><option value="city">Within a City</option><option value="cities">Different Cities</option><option value="countries">Different Countries</option></select>
+<p class="row"><button class="btn" onclick="analyse()">Analyse Network</button><button class="btn ghost" onclick="resetForm()">Reset</button></p></div>
+<div class="card"><h3>Sample scenarios</h3><p class="mu">Click one to fill the form and analyse it.</p><div id="samples" class="row" style="flex-direction:column;align-items:stretch"></div>
+<p class="mu" style="margin-top:14px"><b>Classification rule:</b> campus → LAN, within a city → MAN, different cities or countries → WAN. Distance and location count are checked for consistency.</p></div></div>
+<div id="result" style="margin-top:18px"></div></section>
+
+<section class="view" id="v-learn"><h2>Learn networks</h2>
+<div class="card"><h3>Coverage at a glance</h3>
+<svg viewBox="0 0 640 220" class="net" style="max-height:240px"><circle cx="320" cy="110" r="105" fill="#1d4ed8" opacity=".18" stroke="#1d4ed8"/><circle cx="320" cy="140" r="70" fill="#0e7490" opacity=".3" stroke="#0e7490"/><circle cx="320" cy="168" r="38" fill="#0a1f44" opacity=".85"/><text x="320" y="172" fill="#fff" text-anchor="middle" font-size="14" font-weight="700">LAN</text><text x="320" y="112" text-anchor="middle" font-size="14" font-weight="700" fill="var(--tx)">MAN</text><text x="320" y="38" text-anchor="middle" font-size="14" font-weight="700" fill="var(--tx)">WAN</text>
+<text x="20" y="60" font-size="12" fill="var(--tx)">LAN: room, building, campus</text><text x="20" y="80" font-size="12" fill="var(--tx)">MAN: a city or metro area</text><text x="20" y="100" font-size="12" fill="var(--tx)">WAN: cities, countries, world</text></svg></div>
+<div class="grid g3" id="lcards" style="margin-top:16px"></div>
+<div class="card tw" style="margin-top:16px"><h3>LAN vs MAN vs WAN</h3><table id="cmp"></table></div></section>
+
+<section class="view" id="v-quiz"><h2>Quiz and knowledge test</h2><div class="card" id="qbox"></div></section>
+
+<section class="view" id="v-hist"><div class="row" style="justify-content:space-between"><h2>Simulation history</h2><button class="btn red sm" onclick="clearH()">Clear history</button></div><div id="hl"></div></section>
+</main>
+<footer>NetScope – Interactive Network Category Simulator · Computer and Communication Engineering Project</footer>
+
+<script>
+const $=s=>document.querySelector(s),mem={};
+const S={g(k){try{return localStorage.getItem(k)}catch(e){return mem[k]??null}},s(k,v){mem[k]=v;try{localStorage.setItem(k,v)}catch(e){}}};
+const J=(k,d)=>{try{return JSON.parse(S.g(k))??d}catch(e){return d}};
+const hs=s=>{let h=5381;for(const c of s)h=(h*33)^c.charCodeAt(0);return String(h>>>0)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let me=S.g('ns_me');
+const users=()=>J('ns_users',{}),H=()=>J('ns_h_'+me,[]);
+const CL={campus:'Building or College Campus',city:'Within a City',cities:'Different Cities',countries:'Different Countries'};
+const T={
+LAN:{full:'Local Area Network',ic:'🏫',area:'A room, building or campus (up to a few km)',ex:'School computer lab, office floor, home Wi‑Fi, hostel network',tech:'Ethernet cables, switches and Wi‑Fi access points',speed:'100 Mbps – 100 Gbps',own:'One organisation',cost:'Low',pro:'Very fast, low cost, easy to manage and secure, low delay',con:'Limited area, shared bandwidth, a switch failure can affect many devices',def:'A LAN connects computers within a small area such as a single building or campus using switches and Wi‑Fi.'},
+MAN:{full:'Metropolitan Area Network',ic:'🏙️',area:'A whole city or metro area (about 5 – 100 km)',ex:'City cable TV network, bank branches across a city, university with many city campuses, city-wide Wi‑Fi',tech:'Optical fibre rings, microwave links, metro Ethernet',speed:'10 Mbps – 10 Gbps',own:'A city authority or service provider',cost:'Medium',pro:'Joins many LANs in a city, high speed over fibre, efficient sharing of resources',con:'Costlier than a LAN, needs a carrier or large investment, harder to secure and maintain',def:'A MAN links several LANs spread across one city or metropolitan area into a single larger network.'},
+WAN:{full:'Wide Area Network',ic:'🌍',area:'Different cities, countries or continents (hundreds to thousands of km)',ex:'The Internet, airline reservation system, bank ATM network, multinational company network',tech:'Leased lines, MPLS, satellite, submarine cables and routers',speed:'1 Mbps – 10 Gbps (varies widely)',own:'Many providers (e.g. telecom companies)',cost:'High',pro:'Global reach, connects remote offices, enables the Internet and cloud services',con:'Most expensive, higher delay, complex to manage, more exposed to security threats',def:'A WAN connects networks over very large distances, such as different cities or countries, using carrier links and routers.'}};
+const SAMP=[{n:'College Computer Lab',l:1,d:40,k:0.5,c:'campus'},{n:'City Bank Branches',l:5,d:150,k:25,c:'city'},{n:'Mysuru–Bengaluru–Chennai Offices',l:3,d:200,k:350,c:'cities'},{n:'Multinational Company',l:6,d:600,k:6000,c:'countries'}];
+
+/* navigation */
+const VIEWS={home:'Home',login:'Login',signup:'Sign Up',dash:'Dashboard',sim:'Simulator',learn:'Learn',quiz:'Quiz',hist:'History'};
+let cur='home';
+function go(v){const prot=['dash','sim','learn','quiz','hist'];if(prot.includes(v)&&!me)v='login';if(!prot.includes(v)&&me&&v!=='home')v='dash';
+cur=v;document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
+({dash:rDash,hist:rHist,quiz:qStart,sim:()=>{}})[v]?.();rNav();$('nav').classList.remove('open');scrollTo(0,0)}
+function rNav(){const L=me?['dash','sim','learn','quiz','hist']:['home','login','signup'];
+$('nav').innerHTML=L.map(v=>`<button class="${v===cur?'on':''}" onclick="go('${v}')">${VIEWS[v]}</button>`).join('')+(me?`<button onclick="logout()">Logout</button>`:'')+`<button class="tg" onclick="theme()" aria-label="Toggle theme">🌓</button>`}
+function theme(){const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=d?'light':'dark'}
+
+/* auth */
+const showE=(id,m)=>$(id).innerHTML=m?`<div class="err" role="alert">${m}</div>`:'';
+function signup(){const n=$('#su-n').value.trim(),e=$('#su-e').value.trim().toLowerCase(),p=$('#su-p').value,c=$('#su-c').value,u=users();
+if(n.length<2)return showE('#se','Please enter your full name (at least 2 characters).');
+if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return showE('#se','Enter a valid email address, for example name@college.edu.');
+if(p.length<6)return showE('#se','Password must be at least 6 characters long.');
+if(p!==c)return showE('#se','Passwords do not match. Re-type the confirmation.');
+if(u[e])return showE('#se','This email is already registered. Please log in instead.');
+u[e]={n,p:hs(p)};S.s('ns_users',JSON.stringify(u));S.s('ns_me',me=e);showE('#se','');go('dash')}
+function login(){const e=$('#li-e').value.trim().toLowerCase(),p=$('#li-p').value,u=users()[e];
+if(!e||!p)return showE('#le','Enter both your email and password.');
+if(!u||u.p!==hs(p))return showE('#le','Email or password is incorrect. Check the details or sign up first.');
+S.s('ns_me',me=e);showE('#le','');go('dash')}
+function logout(){S.s('ns_me','');me=null;cur='home';go('home')}
+
+/* dashboard */
+const catCard=(k,click)=>`<div class="card cc" onclick="${click}"><div class="ic">${T[k].ic}</div><h3><span class="chip ${k}">${k}</span> ${T[k].full}</h3><p class="mu">${T[k].def}</p><b>Coverage:</b> ${T[k].area}</div>`;
+function rDash(){const h=H(),c=k=>h.filter(x=>x.cat===k).length,u=users()[me]||{n:'Student'};
+$('#wel').textContent='Welcome back, '+u.n+'!';
+$('#stats').innerHTML=[['Total simulations',h.length,'🧪'],['LAN simulations',c('LAN'),'🏫'],['MAN simulations',c('MAN'),'🏙️'],['WAN simulations',c('WAN'),'🌍']].map(s=>`<div class="card stat"><span class="ic">${s[2]}</span><b>${s[1]}</b>${s[0]}</div>`).join('');
+$('#dcards').innerHTML=['LAN','MAN','WAN'].map(k=>catCard(k,"go('learn')")).join('')}
+
+/* simulator */
+function validate(r){
+if(r.n.length<2)return'Enter a scenario name with at least 2 characters.';
+if(!Number.isInteger(r.l)||r.l<1||r.l>20)return'Number of locations must be a whole number from 1 to 20.';
+if(!Number.isInteger(r.d)||r.d<1||r.d>10000)return'Number of devices must be a whole number from 1 to 10,000.';
+if(!(r.k>0)||r.k>20000)return'Enter a coverage distance greater than 0 and up to 20,000 km.';
+if(!r.c)return'Select the geographical coverage of the network.';
+if(r.c!=='campus'&&r.l<2)return'A network across a city, cities or countries needs at least 2 locations.';
+if(r.c==='campus'&&r.k>5)return'A building or campus network normally covers 5 km or less. Reduce the distance or choose a wider coverage.';
+if(r.c==='city'&&r.k>150)return'A single city rarely exceeds 150 km. Reduce the distance or choose “Different Cities”.';
+if(r.c==='cities'&&r.k<10)return'Different cities are usually more than 10 km apart. Increase the distance or choose “Within a City”.';
+if(r.c==='countries'&&r.k<50)return'Different countries usually imply more than 50 km. Increase the distance or choose “Different Cities”.';return''}
+const classify=c=>c==='campus'?'LAN':c==='city'?'MAN':'WAN';
+function analyse(){const r={n:$('#s-n').value.trim(),l:+$('#s-l').value,d:+$('#s-d').value,k:+$('#s-k').value,c:$('#s-c').value},m=validate(r);
+showE('#sme',m);if(m){$('#result').innerHTML='';return}
+r.cat=classify(r.c);r.id=Date.now();r.date=new Date().toLocaleString();const h=H();h.unshift(r);S.s('ns_h_'+me,JSON.stringify(h));show(r);$('#result').scrollIntoView({behavior:'smooth'})}
+function resetForm(){['n','l','d','k','c'].forEach(i=>$('#s-'+i).value={l:1,d:20,k:0.5}[i]??'');showE('#sme','');$('#result').innerHTML=''}
+function sample(i){const s=SAMP[i];$('#s-n').value=s.n;$('#s-l').value=s.l;$('#s-d').value=s.d;$('#s-k').value=s.k;$('#s-c').value=s.c;analyse()}
+function show(r){go('sim');const t=T[r.cat],why=[
+`Coverage selected is <b>${CL[r.c]}</b>, which matches the ${r.cat} range: ${t.area}.`,
+`The distance of <b>${r.k} km</b> ${r.cat==='LAN'?'is small enough for cables and Wi‑Fi inside one site':r.cat==='MAN'?'fits a city-wide network built on fibre or metro links':'is too large for local cabling, so carrier links and routers are needed'}.`,
+`<b>${r.l}</b> location${r.l>1?'s':''} with <b>${r.d}</b> devices ${r.cat==='LAN'?'can share one or a few switches':r.cat==='MAN'?'are joined by a metro backbone, each site keeping its own LAN':'are joined through routers over WAN links, each site keeping its own LAN'}.`,
+`Typical technology: ${t.tech}.`];
+$('#result').innerHTML=`<div class="card"><div class="row"><span class="chip ${r.cat}" style="font-size:1.3rem">${r.cat}</span><h2 style="margin:0">${t.full}</h2></div>
+<p>${esc(r.n)} is classified as a <b>${r.cat}</b>.</p>
+<div class="grid g2"><div><h3>Why this category?</h3><ul>${why.map(w=>`<li>${w}</li>`).join('')}</ul></div>
+<div class="tw"><h3>Analysis summary</h3><table><tr><th>Scenario</th><td>${esc(r.n)}</td></tr><tr><th>Locations</th><td>${r.l}</td></tr><tr><th>Devices</th><td>${r.d}</td></tr><tr><th>Distance</th><td>${r.k} km</td></tr><tr><th>Coverage</th><td>${CL[r.c]}</td></tr><tr><th>Typical speed</th><td>${t.speed}</td></tr><tr><th>Ownership</th><td>${t.own}</td></tr><tr><th>Analysed</th><td>${r.date}</td></tr></table></div></div>
+<h3 style="margin-top:18px">Network visualisation</h3><p class="mu">Hover over a node for details. Moving dots show data travelling along each link.</p>${draw(r)}</div>`}
+function node(x,y,ic,lb,c,tip){return`<g class="nd" transform="translate(${x},${y})"><title>${esc(tip||lb)}</title><circle r="21" fill="var(--card)" stroke="${c}" stroke-width="2.5"/><text text-anchor="middle" dy="7" font-size="20">${ic}</text><text y="38" text-anchor="middle" font-size="11" fill="var(--tx)">${esc(lb)}</text></g>`}
+function edge(a,b,c,bend=0){const d=`M${a[0]} ${a[1]}Q${(a[0]+b[0])/2} ${(a[1]+b[1])/2-bend} ${b[0]} ${b[1]}`;return`<path d="${d}" class="flow" stroke="${c}"/><circle r="3.5" fill="${c}"><animateMotion dur="${2+(a[0]%3)*.4}s" repeatCount="indefinite" path="${d}"/></circle>`}
+function draw(r){let e='',n='',bg='',c=r.cat==='LAN'?'#1d4ed8':r.cat==='MAN'?'#0e7490':'#14327a';
+if(r.cat==='LAN'){const m=Math.min(r.d,10),C=[320,205];bg=`<rect x="15" y="75" width="610" height="270" rx="18" fill="none" stroke="#7a8fb8" stroke-dasharray="8 5"/><text x="30" y="98" font-size="12" fill="var(--mu)">${CL[r.c]} boundary</text>`;
+const R=[580,45];e+=edge(R,C,c,20);n+=node(R[0],R[1],'📡','Router → Internet',c)+node(C[0],C[1],'🔀','Switch',c,'Central switch connects all devices');
+for(let i=0;i<m;i++){const a=2*Math.PI*i/m+Math.PI/m,p=[320+235*Math.cos(a),205+100*Math.sin(a)];e+=edge(C,p,c);n+=node(p[0],p[1],i%5===4?'🖨️':'💻',(i%5===4?'Printer ':'PC ')+(i+1),c,'Device '+(i+1)+' connected by Ethernet or Wi‑Fi')}
+if(r.d>m)n+=`<text x="320" y="250" text-anchor="middle" font-size="12" fill="var(--mu)">+${r.d-m} more devices</text>`}
+else if(r.cat==='MAN'){const m=Math.min(r.l,6),H0=[320,190],P=[];bg=`<rect x="10" y="10" width="620" height="340" rx="18" fill="none" stroke="#7a8fb8" stroke-dasharray="8 5"/><text x="26" y="32" font-size="12" fill="var(--mu)">City boundary (metropolitan area)</text>`;
+for(let i=0;i<m;i++){const a=2*Math.PI*i/m-Math.PI/2;P.push([320+225*Math.cos(a),195+108*Math.sin(a)])}
+P.forEach((p,i)=>{e+=edge(H0,p,'#7a8fb8');if(i<m-1||m>2&&i===m-1)e+=edge(p,P[(i+1)%m],c,0)});
+n+=node(H0[0],H0[1],'🔀','Metro core / ISP hub',c,'Fibre backbone hub');P.forEach((p,i)=>n+=node(p[0],p[1],'🏢','Site '+(i+1),c,'Site '+(i+1)+': about '+Math.round(r.d/r.l)+' devices on its own LAN'));
+if(r.l>m)n+=`<text x="320" y="345" text-anchor="middle" font-size="12" fill="var(--mu)">+${r.l-m} more sites</text>`}
+else{const m=Math.min(r.l,8),O=[0,3,5,7,1,2,4,6],Q=[[90,90],[200,55],[470,60],[560,120],[545,270],[380,315],[150,290],[65,195]],K=[320,180];
+bg=[[40,50,95,55],[165,235,100,55],[420,100,110,60],[470,260,90,45]].map(a=>`<ellipse cx="${a[0]+a[2]/2}" cy="${a[1]+a[3]/2}" rx="${a[2]}" ry="${a[3]}" fill="#1d4ed8" opacity=".12"/>`).join('')+`<text x="20" y="345" font-size="12" fill="var(--mu)">Sites are shown on a simplified world map</text>`;
+n+=node(K[0],K[1],'☁️','Internet / WAN backbone',c,'Carrier network linking all sites');
+for(let i=0;i<m;i++){const p=Q[O[i]];e+=edge(p,K,c,i%2?40:-40);n+=node(p[0],p[1],'🏢',(r.c==='countries'?'Country ':'City ')+(i+1),c,(r.c==='countries'?'Country ':'City ')+(i+1)+': about '+Math.round(r.d/r.l)+' devices on a local LAN')}
+if(r.l>m)n+=`<text x="320" y="258" text-anchor="middle" font-size="12" fill="var(--mu)">+${r.l-m} more locations</text>`}
+return`<svg class="net" viewBox="0 0 640 360" role="img" aria-label="${r.cat} diagram">${bg}${e}${n}</svg>`}
+
+/* learn */
+function rLearn(){$('#lcards').innerHTML=['LAN','MAN','WAN'].map(k=>{const t=T[k];return`<div class="card"><div class="ic">${t.ic}</div><h3><span class="chip ${k}">${k}</span> ${t.full}</h3><p>${t.def}</p><p><b>Coverage:</b> ${t.area}</p><p><b>Examples:</b> ${t.ex}</p><p><b>Advantages:</b> ${t.pro}</p><p><b>Limitations:</b> ${t.con}</p></div>`}).join('');
+const rows=[['Full form','full'],['Coverage','area'],['Typical speed','speed'],['Technology','tech'],['Ownership','own'],['Setup cost','cost'],['Examples','ex']];
+$('#cmp').innerHTML='<tr><th>Feature</th><th>LAN</th><th>MAN</th><th>WAN</th></tr>'+rows.map(r=>`<tr><th>${r[0]}</th>${['LAN','MAN','WAN'].map(k=>`<td>${T[k][r[1]]}</td>`).join('')}</tr>`).join('')}
+
+/* quiz */
+const Q=[['What does LAN stand for?',['Large Area Network','Local Area Network','Linked Access Node','Long Area Network'],1,'LAN means Local Area Network, a network in a small area.'],
+['Which network typically covers a single college campus?',['LAN','MAN','WAN','None of these'],0,'A campus is a small area, so it is a LAN.'],
+['A cable TV network spread across a whole city is an example of a…',['LAN','MAN','WAN','PAN'],1,'City-wide coverage is a Metropolitan Area Network.'],
+['Which is the best-known example of a WAN?',['A school lab','A home Wi‑Fi','The Internet','A printer cable'],2,'The Internet connects networks across the globe.'],
+['Which network usually has the highest speed and lowest delay?',['WAN','MAN','LAN','All are equal'],2,'Short distances let LANs be fastest with the lowest delay.'],
+['Which device is essential to connect networks in different cities?',['Hub','Router','Keyboard','Repeater only'],1,'Routers forward packets between separate networks.'],
+['What does MAN stand for?',['Multi Access Node','Main Area Network','Metropolitan Area Network','Mobile Area Network'],2,'MAN means Metropolitan Area Network.'],
+['A bank connecting ATMs in different countries needs a…',['LAN','MAN','WAN','Bluetooth link'],2,'Different countries mean WAN coverage.']];
+let qi=0,qs=0,qa=false;
+function qStart(){qi=0;qs=0;qa=false;qShow()}
+function qShow(){const b=$('#qbox');if(qi>=Q.length){const p=Math.round(qs/Q.length*100);b.innerHTML=`<h3>Quiz complete</h3><p style="font-size:2rem"><b>${qs} / ${Q.length}</b> (${p}%)</p><p>${p>=80?'Excellent work! You know your network categories.':p>=50?'Good effort. Review the Learn section to improve.':'Keep practising. Revisit the Learn section and try again.'}</p><button class="btn" onclick="qStart()">Retake quiz</button> <button class="btn ghost" onclick="go('learn')">Review notes</button>`;return}
+const q=Q[qi];qa=false;b.innerHTML=`<div class="pg"><i style="width:${qi/Q.length*100}%"></i></div><p class="mu">Question ${qi+1} of ${Q.length} · Score ${qs}</p><h3>${q[0]}</h3>${q[1].map((o,i)=>`<button class="opt" onclick="qAns(${i})">${o}</button>`).join('')}<div id="qf"></div>`}
+function qAns(i){if(qa)return;qa=true;const q=Q[qi],ok=i===q[2];if(ok)qs++;
+document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===q[2])b.classList.add('ok');else if(j===i)b.classList.add('no')});
+$('#qf').innerHTML=`<p style="color:var(--${ok?'ok':'bad'})"><b>${ok?'Correct!':'Not quite.'}</b> ${q[3]}</p><button class="btn" onclick="qi++;qShow()">${qi===Q.length-1?'See result':'Next question'}</button>`}
+
+/* history */
+function rHist(){const h=H();$('#hl').innerHTML=h.length?`<div class="grid g3">${h.map(x=>`<div class="card"><span class="chip ${x.cat}">${x.cat}</span> <b>${esc(x.n)}</b><p class="mu" style="margin:6px 0">${x.date}</p><p style="font-size:.9rem">${x.l} location(s) · ${x.d} devices · ${x.k} km<br>${CL[x.c]}</p><button class="btn sm" onclick="view(${x.id})">View result</button></div>`).join('')}</div>`:`<div class="card"><p>No simulations yet. Run your first analysis in the simulator.</p><button class="btn" onclick="go('sim')">Open simulator</button></div>`}
+function view(id){const r=H().find(x=>x.id===id);if(!r)return;go('sim');$('#s-n').value=r.n;$('#s-l').value=r.l;$('#s-d').value=r.d;$('#s-k').value=r.k;$('#s-c').value=r.c;show(r)}
+function clearH(){if(!H().length)return;if(confirm('Delete all saved simulations? This cannot be undone.')){S.s('ns_h_'+me,'[]');rHist()}}
+
+/* init */
+$('#homecards').innerHTML=['LAN','MAN','WAN'].map(k=>catCard(k,"go('signup')")).join('');
+$('#samples').innerHTML=SAMP.map((s,i)=>`<button class="btn ghost" style="text-align:left" onclick="sample(${i})"><b>${s.n}</b><br><span style="font-weight:400;font-size:.85rem">${s.l} location(s), ${s.d} devices, ${s.k} km</span></button>`).join('');
+rLearn();const _go=go;go=function(v){_go(v)};
+cur=me?'dash':'home';go(cur);
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&['li-e','li-p'].includes(e.target.id))login()});
+</script></body></html>
